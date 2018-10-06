@@ -15,7 +15,10 @@ namespace UrlMapper
 
         public void ExtractVariables(string target, IDictionary<string, string> dicToStoreResults)
         {
-            throw new System.NotImplementedException();
+            if (!IsMatched(target)) return;
+
+            var segments = SegmentPattern(pattern);
+            getPattern(target, segments, dicToStoreResults);
         }
 
         public bool IsMatched(string textToCompare)
@@ -74,7 +77,7 @@ namespace UrlMapper
             return segments;
         }
 
-        internal string getPattern(string url, IEnumerable<string> segments)
+        internal string getPattern(string url, IEnumerable<string> segments, IDictionary<string, string> dicToStoreResults = null)
         {
             if (url == null) return string.Empty;
 
@@ -102,7 +105,8 @@ namespace UrlMapper
                 {
                     if (!string.IsNullOrEmpty(variableSegment))
                     {
-                        url = url.Remove(0, beginSegmentIndex);
+                        dicToStoreResults?.Add(variableSegment, url.Substring(MinimumRangeOfSegmentation, beginSegmentIndex));
+                        url = url.Remove(MinimumRangeOfSegmentation, beginSegmentIndex);
                         variableSegment = string.Empty;
                         beginSegmentIndex = url.IndexOf(item);
                     }
@@ -114,6 +118,8 @@ namespace UrlMapper
 
             var isVariableSegmentClear = string.IsNullOrEmpty(variableSegment);
             if (isVariableSegmentClear) pattern.Append(url);
+            else dicToStoreResults?.Add(variableSegment, url);
+
             return pattern.ToString();
         }
     }

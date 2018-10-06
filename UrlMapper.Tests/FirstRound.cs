@@ -488,7 +488,7 @@ namespace UrlMapper.Tests
             sut.IsMatched(url).Should().Be(expectedResult);
         }
 
-        [Theory(DisplayName = "ระบบสามารถทำการแยกข้อมูลออกจาก url ที่ส่งเข้ามาได้ถูกต้อง", Skip = "NVM at this time")]
+        [Theory(DisplayName = "ระบบสามารถทำการแยกข้อมูลออกจาก url ที่ส่งเข้ามาได้ถูกต้อง")]
         [InlineData("https://mana.com/linkto/{link-id}", "https://mana.com/linkto/A2348", "{link-id}", "A2348")]
         [InlineData("http://google.com/?s={keyword}", "http://google.com/?s=Xamarin", "{keyword}", "Xamarin")]
         [InlineData("https://mana.com/app/{app-id}/services/{service-id}", "https://mana.com/app/di394/services/878", "{app-id},{service-id}", "di394,878")]
