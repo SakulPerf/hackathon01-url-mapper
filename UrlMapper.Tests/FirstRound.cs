@@ -122,11 +122,13 @@ namespace UrlMapper.Tests
 
         [Theory(DisplayName = "ระบบสามารถตรวจสอบการจับคู่ของ pattern ได้ถูกต้อง")]
         [InlineData(null, "", false)]
+        [InlineData(null, " ", false)]
         [InlineData(null, null, false)]
         [InlineData("", "", true)]
+        [InlineData("", " ", false)]
         [InlineData("", null, false)]
-        [InlineData(" ", " ", true)]
         [InlineData(" ", "", false)]
+        [InlineData(" ", " ", true)]
         [InlineData(" ", null, false)]
         [InlineData("http://hackathon.com", "http://hackathon.com", true)]
         [InlineData("http://hackathon.com", "http://hackathon.com/", false)]
@@ -503,7 +505,10 @@ namespace UrlMapper.Tests
             var expectedValues = values.Split(',');
 
             for (int elementIndex = 0; elementIndex < expectedKeys.Length; elementIndex++)
+            {
+                if (string.IsNullOrEmpty(expectedKeys[elementIndex])) continue;
                 expectedDic.Add(expectedKeys[elementIndex], expectedValues[elementIndex]);
+            }
 
             var actual = new Dictionary<string, string>();
             var isMatch = sut.IsMatched(url);

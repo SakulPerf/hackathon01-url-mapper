@@ -65,6 +65,7 @@ namespace UrlMapper.Tests
         [InlineData("{}/{}", "sakul/jaruthanaset", "{}/{}")]
         [InlineData("{}/{}", "sakul/jaruthanaset/123/456", "{}/{}")]
         [InlineData("www.something.com/", "www.something.com/", "www.something.com/")]
+        [InlineData("https://hackathon.com/{username}/", "https://hackathon.com/", "https://hackathon.com/{username}/")]
         public void StringParameterCanCreatePatternFromSegmentation(string pattern, string url, string expectedPattern)
             => validatePattern(pattern, url, expectedPattern);
 

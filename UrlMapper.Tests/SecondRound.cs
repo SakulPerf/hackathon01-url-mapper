@@ -7,7 +7,7 @@ namespace UrlMapper.Tests
 {
     public class SecondRound
     {
-        [Theory(DisplayName = "ระบบสามารถทำการแยกข้อมูลออกจาก url ที่ส่งเข้ามาในรูปแบบต่างๆได้ถูกต้อง", Skip = "NVM at this time")]
+        [Theory(DisplayName = "ระบบสามารถทำการแยกข้อมูลออกจาก url ที่ส่งเข้ามาในรูปแบบต่างๆได้ถูกต้อง")]
         [InlineData(null, "", "", "")]
         [InlineData(null, " ", "", "")]
         [InlineData(null, "something", "", "")]
@@ -36,7 +36,7 @@ namespace UrlMapper.Tests
         [InlineData("something/{p1}/aa{p2-with-prefix}", "something/miolynet/aathes", "{p1},{p2-with-prefix}", "miolynet,thes")]
         [InlineData("something/{p1}/{p2-with-postfix}aa", "something/miolynet/thesaa", "{p1},{p2-with-postfix}", "miolynet,thes")]
         [InlineData("something/{p1}/aa{p2-with-prefix-and-postfix}bb", "something/miolynet/aathesbb", "{p1},{p2-with-prefix-and-postfix}", "miolynet,thes")]
-        [InlineData("something/{p1}/aa{p2-no-value}bb", "something/miolynet/aathesbb", "{p1},{p2-no-value}", "miolynet,")]
+        [InlineData("something/{p1}/aa{p2-no-value}bb", "something/miolynet/aabb", "{p1},{p2-no-value}", "miolynet,")]
 
         [InlineData("something/aa{p1-with-prefix}/xx{p2-with-prefix}", "something/aamiolynet/xxthes", "{p1-with-prefix},{p2-with-prefix}", "miolynet,thes")]
         [InlineData("something/aa{p1-with-prefix}/{p2-with-postfix}xx", "something/aamiolynet/thesxx", "{p1-with-prefix},{p2-with-postfix}", "miolynet,thes")]
@@ -54,7 +54,7 @@ namespace UrlMapper.Tests
         [InlineData("something/aa{p1-with-prefix-and-postfix}bb/xx{p2-no-data}yy", "something/aamiolynetbb/xxyy", "{p1-with-prefix-and-postfix},{p2-no-data}", "miolynet,")]
 
         [InlineData("something/aa{p1-no-data}bb/xx{p2-with-prefix}", "something/aabb/xxthes", "{p1-no-data},{p2-with-prefix}", ",thes")]
-        [InlineData("something/aa{p1-no-data}bb/{p2-with-postfix}xx", "something/aabb/thesxx", "{p1-no-datax},{p2-with-postfix}", ",thes")]
+        [InlineData("something/aa{p1-no-data}bb/{p2-with-postfix}xx", "something/aabb/thesxx", "{p1-no-data},{p2-with-postfix}", ",thes")]
         [InlineData("something/aa{p1-no-data}bb/xx{p2-with-prefix-and-postfix}yy", "something/aabb/xxthesyy", "{p1-no-data},{p2-with-prefix-and-postfix}", ",thes")]
         [InlineData("something/aa{p1-no-data}bb/xx{p2-no-data}yy", "something/aabb/xxyy", "{p1-no-data},{p2-no-data}", ",")]
 

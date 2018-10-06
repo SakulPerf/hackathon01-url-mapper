@@ -31,7 +31,11 @@ namespace UrlMapper
 
             var patternSegments = SegmentPattern(pattern);
             const int MaximumKey = 1;
-            var hasPatternDuplicatedKeys = patternSegments.GroupBy(it => it).Any(it => it.Count() > MaximumKey);
+            const string SegmentSeparator = "/";
+            var hasPatternDuplicatedKeys = patternSegments
+                .Where(it => it != SegmentSeparator)
+                .GroupBy(it => it)
+                .Any(it => it.Count() > MaximumKey);
             if (hasPatternDuplicatedKeys) return false;
 
             var inputPattern = getPattern(textToCompare, patternSegments);
@@ -86,13 +90,25 @@ namespace UrlMapper
             const int MinimumRangeOfSegmentation = 0;
             var pattern = new StringBuilder();
 
+            const string SegmentSeparator = "/";
             var isFirstSegment = true;
             var variableSegment = string.Empty;
+            var isEndWithSegmentSeparator = false;
             foreach (var item in segments)
             {
                 var beginSegmentIndex = url.IndexOf(item);
                 var isContainSegment = beginSegmentIndex >= MinimumRangeOfSegmentation;
                 var isVariableSection = item.StartsWith(BeginSegment) && item.EndsWith(EndSegment);
+
+                var nothingLeftURL = string.IsNullOrEmpty(url);
+                var canTaskAllSegments = nothingLeftURL && isEndWithSegmentSeparator;
+                if (canTaskAllSegments)
+                {
+                    pattern.Append(item);
+                    if (isVariableSection) dicToStoreResults?.Add(item, string.Empty);
+                    continue;
+                }
+
                 var shouldKeetpThisSegment = isContainSegment || isVariableSection;
                 if (!shouldKeetpThisSegment)
                 {
@@ -103,6 +119,7 @@ namespace UrlMapper
                 if (isVariableSection) variableSegment = item;
                 else
                 {
+                    isEndWithSegmentSeparator = item.EndsWith(SegmentSeparator);
                     if (!string.IsNullOrEmpty(variableSegment))
                     {
                         dicToStoreResults?.Add(variableSegment, url.Substring(MinimumRangeOfSegmentation, beginSegmentIndex));
