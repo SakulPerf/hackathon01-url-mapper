@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 [assembly: InternalsVisibleTo("UrlMapper.Tests")]
 namespace UrlMapper
@@ -57,6 +57,47 @@ namespace UrlMapper
                 if (shouldKeepTheLastSegment) segments.Add(lastSegment);
             }
             return segments;
+        }
+
+        internal string getPattern(string url, IEnumerable<string> segments)
+        {
+            var isArgumentsValid = url != null
+                && segments != null
+                && !string.IsNullOrEmpty(this.pattern);
+            if (!isArgumentsValid) return string.Empty;
+
+            const string BeginSegment = "{";
+            const string EndSegment = "}";
+            const int MinimumRangeOfSegmentation = 0;
+            var pattern = new StringBuilder();
+
+            var variableSegment = string.Empty;
+            foreach (var item in segments)
+            {
+                var beginSegmentIndex = url.IndexOf(item);
+                var isContainSegment = beginSegmentIndex >= MinimumRangeOfSegmentation;
+                var isVariableSection = item.StartsWith(BeginSegment) && item.EndsWith(EndSegment);
+                var shouldKeetpThisSegment = isContainSegment || isVariableSection;
+                if (!shouldKeetpThisSegment) continue;
+
+                if (isVariableSection)
+                {
+                    variableSegment = item;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(variableSegment))
+                    {
+                        url = url.Remove(0, beginSegmentIndex);
+                        variableSegment = string.Empty;
+                        beginSegmentIndex = url.IndexOf(item);
+                    }
+                    url = url.Remove(beginSegmentIndex, item.Length);
+                }
+
+                pattern.Append(item);
+            }
+            return pattern.ToString();
         }
     }
 }
