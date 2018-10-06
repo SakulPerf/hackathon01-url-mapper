@@ -46,16 +46,9 @@ namespace UrlMapper.Tests
             actual.Should().NotBeNull().And.BeEquivalentTo(expectedSegments);
         }
 
-        [Theory(DisplayName = "System can create pattern from segmentation.")]
+        [Theory(DisplayName = "System can create pattern from segmentation (matched).")]
         [InlineData("", "", "")]
-        [InlineData("", " ", "")]
-        [InlineData("", null, "")]
-        [InlineData(" ", "", "")]
-        [InlineData(" ", " ", "")]
-        [InlineData(" ", null, "")]
-        [InlineData(null, "", "")]
-        [InlineData(null, " ", "")]
-        [InlineData(null, null, "")]
+        [InlineData(" ", " ", " ")]
         [InlineData("www.something.com", "www.something.com", "www.something.com")]
         [InlineData("www.something.com/sakul", "www.something.com/sakul", "www.something.com/sakul")]
         [InlineData("www.something.com/{username}", "www.something.com/sakul", "www.something.com/{username}")]
@@ -71,7 +64,34 @@ namespace UrlMapper.Tests
         [InlineData("www.something.com/{}", "www.something.com/sakul/something", "www.something.com/{}")]
         [InlineData("{}/{}", "sakul/jaruthanaset", "{}/{}")]
         [InlineData("{}/{}", "sakul/jaruthanaset/123/456", "{}/{}")]
+        [InlineData("www.something.com/", "www.something.com/", "www.something.com/")]
         public void StringParameterCanCreatePatternFromSegmentation(string pattern, string url, string expectedPattern)
+            => validatePattern(pattern, url, expectedPattern);
+
+        [Theory(DisplayName = "System can create pattern from segmentation (unmatch cases).")]
+        [InlineData("", " ", " ")]
+        [InlineData("", null, "")]
+        [InlineData(" ", "", "")]
+        [InlineData(" ", null, "")]
+        [InlineData(null, "", "")]
+        [InlineData(null, " ", " ")]
+        [InlineData(null, null, "")]
+        [InlineData("www.something.com", "", "")]
+        [InlineData("www.something.com", " ", " ")]
+        [InlineData("www.something.com", null, "")]
+        [InlineData("www.something.com", "something.com", "something.com")]
+        [InlineData("www.something.com", "www.something.com/", "www.something.com/")]
+        [InlineData("www.something.com/sakul", "www.something.com/sakul1234", "www.something.com/sakul1234")]
+        [InlineData("www.something.com/{username}", "something.com/sakul", "something.com/sakul")]
+        [InlineData("www.something.com/{username}/service", "something.com/sakul/service", "something.com/sakul/service")]
+        [InlineData("www.something.com/{username}/service/{service}", "something.com/sakul/service/1234", "something.com/sakul/service/1234")]
+        [InlineData("www.something.com/prefix{username}", "something.com/prefixsakul", "something.com/prefixsakul")]
+        [InlineData("www.something.com/prefix{username}", "www.something.com/-prefixsakul", "www.something.com/-prefixsakul")]
+        [InlineData("www.something.com/{username}postfix", "something.com/sakulpostfix", "something.com/sakulpostfix")]
+        public void StringParameterCanCreatePatternFromSegmentationWhenPatternNotMatch(string pattern, string url, string expectedPattern)
+            => validatePattern(pattern, url, expectedPattern);
+
+        private void validatePattern(string pattern, string url, string expectedPattern)
         {
             var sut = GetSimpleStringParameterObj(pattern);
             var segments = sut.SegmentPattern(pattern);

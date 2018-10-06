@@ -9,7 +9,7 @@ namespace UrlMapper.Tests
     {
         public static ISimpleStringParameterBuilder Builder => new SimpleStringParameterBuilder();
 
-        [Theory(DisplayName = "ระบบสามารถสร้าง object ของ StringParameter ได้", Skip = "NVM at this time")]
+        [Theory(DisplayName = "ระบบสามารถสร้าง object ของ StringParameter ได้")]
         [InlineData("")]
         [InlineData(null)]
         [InlineData("something")]
@@ -120,7 +120,7 @@ namespace UrlMapper.Tests
             sut.Parse(pattern).Should().NotBeNull();
         }
 
-        [Theory(DisplayName = "ระบบสามารถตรวจสอบการจับคู่ของ pattern ได้ถูกต้อง", Skip = "NVM at this time")]
+        [Theory(DisplayName = "ระบบสามารถตรวจสอบการจับคู่ของ pattern ได้ถูกต้อง")]
         [InlineData(null, "", false)]
         [InlineData(null, null, false)]
         [InlineData("", "", true)]

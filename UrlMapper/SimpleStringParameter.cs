@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -19,7 +20,21 @@ namespace UrlMapper
 
         public bool IsMatched(string textToCompare)
         {
-            throw new System.NotImplementedException();
+            var areArgumentsValid = pattern != null && textToCompare != null;
+            if (!areArgumentsValid) return false;
+
+            var isSimpleMatched = pattern == textToCompare;
+            if (isSimpleMatched) return true;
+
+            var patternSegments = SegmentPattern(pattern);
+            const int MaximumKey = 1;
+            var hasPatternDuplicatedKeys = patternSegments.GroupBy(it => it).Any(it => it.Count() > MaximumKey);
+            if (hasPatternDuplicatedKeys) return false;
+
+            var inputPattern = getPattern(textToCompare, patternSegments);
+
+            var result = pattern.Equals(inputPattern, StringComparison.CurrentCultureIgnoreCase);
+            return result;
         }
 
         internal IEnumerable<string> SegmentPattern(string url)
@@ -61,16 +76,14 @@ namespace UrlMapper
 
         internal string getPattern(string url, IEnumerable<string> segments)
         {
-            var isArgumentsValid = url != null
-                && segments != null
-                && !string.IsNullOrEmpty(this.pattern);
-            if (!isArgumentsValid) return string.Empty;
+            if (url == null) return string.Empty;
 
             const string BeginSegment = "{";
             const string EndSegment = "}";
             const int MinimumRangeOfSegmentation = 0;
             var pattern = new StringBuilder();
 
+            var isFirstSegment = true;
             var variableSegment = string.Empty;
             foreach (var item in segments)
             {
@@ -78,12 +91,13 @@ namespace UrlMapper
                 var isContainSegment = beginSegmentIndex >= MinimumRangeOfSegmentation;
                 var isVariableSection = item.StartsWith(BeginSegment) && item.EndsWith(EndSegment);
                 var shouldKeetpThisSegment = isContainSegment || isVariableSection;
-                if (!shouldKeetpThisSegment) continue;
-
-                if (isVariableSection)
+                if (!shouldKeetpThisSegment)
                 {
-                    variableSegment = item;
+                    if (!isContainSegment && isFirstSegment) return url;
+                    else continue;
                 }
+
+                if (isVariableSection) variableSegment = item;
                 else
                 {
                     if (!string.IsNullOrEmpty(variableSegment))
@@ -94,9 +108,12 @@ namespace UrlMapper
                     }
                     url = url.Remove(beginSegmentIndex, item.Length);
                 }
-
                 pattern.Append(item);
+                isFirstSegment = false;
             }
+
+            var isVariableSegmentClear = string.IsNullOrEmpty(variableSegment);
+            if (isVariableSegmentClear) pattern.Append(url);
             return pattern.ToString();
         }
     }
